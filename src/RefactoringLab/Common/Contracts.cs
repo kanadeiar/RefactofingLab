@@ -2,7 +2,7 @@
 
 namespace Kanadeiar.Common;
 
-public static class ContractsExtensions
+public static class Contracts
 {
     [DebuggerHidden]
     public static T Require<T>(this T on, bool check)

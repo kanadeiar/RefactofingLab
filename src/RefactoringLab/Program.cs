@@ -2,17 +2,12 @@
 
 ConsoleHelper.PrintHeader("Опытно-экспериментальное приложение", "Опыты над рефакторингом");
 
-var email = Email.Create("nik@mail.ru") switch
-{
-    { Success : false } => throw new ArgumentException("test"),
-    { } some => some.Value,
-};
+var email = Email.Create("nik@mail.ru")
+    .TryGetValue(_ => throw new ArgumentException("test"));
 
-var name = CustomerName.Create("Andrei") switch
-{
-    { Success : false } => throw new ArgumentException("test"),
-    { } some => some.Value,
-};
+var name = CustomerName.Create("Andrei")
+    .TryGetValue(_ => CustomerName.Create("Tom")
+        .TryGetValue(_ => throw new ArgumentException()));
 
 var customer = new Customer(email, name);
 customer.ChangeEmail(email);

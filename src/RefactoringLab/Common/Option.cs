@@ -2,19 +2,22 @@
 
 public interface INone
 {
-    public string Error { get; }
+    public string Message { get; }
 }
 
-public class Some<T>(T value, bool success = true)
+public interface ISome<out T>
 {
-    public bool Success { get; } = success;
-
-    public T Value => value;
+    public T Value { get; }
 }
 
-public class None<T>(string error) : Some<T>(default!, false), INone
+public class Some<T>(T value) : ISome<T>
 {
-    public string Error => error;
+    T ISome<T>.Value => value;
+}
+
+public class None<T>(string message) : Some<T>(default!), INone
+{
+    string INone.Message => message;
 }
 
 public static class Option
@@ -23,4 +26,14 @@ public static class Option
 
     public static Some<T> None<T>(string message) => 
         new None<T>(message);
+
+    public static T TryGetValue<T>(this Some<T> option, Func<INone, T> noneFunc)
+    {
+        return option switch
+        {
+            INone none => noneFunc(none),
+            ISome<T> some => some.Value,
+            _ => throw new ArgumentOutOfRangeException(nameof(option))
+        };
+    }
 }
